@@ -18,30 +18,6 @@
     "host": "localhost:8080",
     "basePath": "/v1",
     "paths": {
-        "/misc/ping": {
-            "get": {
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/misc.MessageResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/misc.MessageResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/users": {
             "get": {
                 "description": "Get all users on the system",
@@ -155,6 +131,39 @@
                     }
                 }
             },
+            "put": {
+                "description": "Update user on the system",
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of user",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User updated info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Delete user on the system",
                 "tags": [
@@ -182,17 +191,13 @@
         }
     },
     "definitions": {
-        "misc.MessageResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
         "models.User": {
             "type": "object",
             "properties": {
+                "coordinates": {
+                    "type": "string",
+                    "example": "39.12355, 27.64538"
+                },
                 "created_at": {
                     "type": "string",
                     "example": "2021-02-24 20:19:39"

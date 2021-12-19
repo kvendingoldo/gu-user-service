@@ -8,6 +8,8 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os"
+	"os/signal"
 )
 
 func startGRPCServer() {
@@ -35,17 +37,17 @@ func startHTTPServer() {
 }
 
 func init() {
-	cfg.Config = cfg.GetConfig()
-	cfg.Config.DB.AutoMigrate(&models.User{})
+	if err := cfg.Config.DB.AutoMigrate(&models.User{}); err != nil {
+		return
+	}
 
 }
 
 func main() {
-	startHTTPServer()
+	go startHTTPServer()
+	go startGRPCServer()
 
-	//go startGRPCServer()
-	//
-	//sig := make(chan os.Signal)
-	//signal.Notify(sig, os.Interrupt, os.Kill)
-	//<-sig
+	sig := make(chan os.Signal)
+	signal.Notify(sig, os.Interrupt, os.Kill)
+	<-sig
 }

@@ -12,7 +12,11 @@ type AppConfig struct {
 	DB *gorm.DB
 }
 
-func GetConfig() AppConfig {
+func init() {
+	Config = getConfig()
+}
+
+func getConfig() AppConfig {
 	bindEnvVars([]string{})
 
 	var config AppConfig

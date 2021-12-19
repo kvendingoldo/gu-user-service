@@ -1,12 +1,10 @@
 basePath: /v1
 definitions:
-  misc.MessageResponse:
-    properties:
-      message:
-        type: string
-    type: object
   models.User:
     properties:
+      coordinates:
+        example: 39.12355, 27.64538
+        type: string
       created_at:
         example: "2021-02-24 20:19:39"
         type: string
@@ -47,21 +45,6 @@ info:
   title: GU user service
   version: "1.0"
 paths:
-  /misc/ping:
-    get:
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/misc.MessageResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/misc.MessageResponse'
   /users:
     get:
       description: Get all users on the system
@@ -151,6 +134,28 @@ paths:
           schema:
             $ref: '#/definitions/users.MessageResponse'
       summary: Get users by ID
+      tags:
+      - user
+    put:
+      description: Update user on the system
+      parameters:
+      - description: id of user
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User updated info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Update user
       tags:
       - user
 swagger: "2.0"

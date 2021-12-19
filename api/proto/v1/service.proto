@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package user;
+option go_package = "./";
+
+service UserService{
+  rpc CreateUser (CreateUserInput) returns (Result) {}
+}
+
+message CreateUserInput {
+  string name = 1;
+  string coordinates = 2;
+}
+
+message Result {
+  int32 code = 1;
+  string message = 2;
+  string data = 3;
+}

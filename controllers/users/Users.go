@@ -3,8 +3,6 @@ package users
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kvendingoldo/gu-user-service/controllers"
-	"log"
-
 	"github.com/kvendingoldo/gu-user-service/models"
 	"net/http"
 	"strconv"
@@ -48,7 +46,12 @@ func GetUsersByID(c *gin.Context) {
 		return
 	}
 
-	log.Println(userID)
+	err = models.GetUserByID(&user, userID)
+	if err != nil {
+		//appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		//_ = c.Error(appError)
+		return
+	}
 
 	c.JSON(http.StatusOK, user)
 }
@@ -85,6 +88,46 @@ func NewUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// UpdateUser godoc
+// @Tags user
+// @Summary Update user
+// @Description Update user on the system
+// @Param id path int true "id of user"
+// @Param input body models.User true "User updated info"
+// @Success 200 {string} string	"ok"
+// @Router /users/{id} [put]
+func UpdateUser(c *gin.Context) {
+	userID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		//appError := errorModels.NewAppError(errors.New("param id is necessary in the url"), errorModels.ValidationError)
+		//_ = c.Error(appError)
+		return
+	}
+	var requestMap map[string]interface{}
+
+	err = controllers.BindJSONMap(c, &requestMap)
+	if err != nil {
+		//appError := errorModels.NewAppError(err, errorModels.ValidationError)
+		//_ = c.Error(appError)
+		return
+	}
+
+	err = updateValidation(requestMap)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	user, err := models.UpdateUser(userID, requestMap)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+
+}
+
 // DeleteUser godoc
 // @Tags user
 // @Summary Delete user
@@ -93,19 +136,18 @@ func NewUser(c *gin.Context) {
 // @Success 200 {string} string	"ok"
 // @Router /users/{id} [delete]
 func DeleteUser(c *gin.Context) {
-	medicineID, _ := strconv.Atoi(c.Param("id"))
-	log.Println(medicineID)
-	//if err != nil {
-	//	//appError := errorModels.NewAppError(errors.New("param id is necessary in the url"), errorModels.ValidationError)
-	//	//_ = c.Error(appError)
-	//	return
-	//}
+	medicineID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		//appError := errorModels.NewAppError(errors.New("param id is necessary in the url"), errorModels.ValidationError)
+		//_ = c.Error(appError)
+		return
+	}
 
-	//err = models.DeleteMedicine(medicineID)
-	//if err != nil {
-	//	_ = c.Error(err)
-	//	return
-	//}
+	err = models.DeleteUser(medicineID)
+	if err != nil {
+		//_ = c.Error(err)
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "resource deleted successfully"})
 }

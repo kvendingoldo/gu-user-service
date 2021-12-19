@@ -2,9 +2,8 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	_ "github.com/kvendingoldo/gu-user-service/api"
-	"github.com/kvendingoldo/gu-user-service/controllers/misc"
 	"github.com/kvendingoldo/gu-user-service/controllers/users"
+	_ "github.com/kvendingoldo/gu-user-service/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -32,18 +31,13 @@ func ApplicationV1Router(router *gin.Engine) {
 			v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		}
 
-		// Misc
-		v1Misc := v1.Group("/misc")
-		{
-			v1Misc.GET("/ping", misc.GetPing)
-		}
-
 		// Users
 		v1Users := v1.Group("/users")
 		{
+			v1Users.POST("/", users.NewUser)
 			v1Users.GET("/", users.GetAllUsers)
 			v1Users.GET("/:id", users.GetUsersByID)
-			v1Users.POST("/", users.NewUser)
+			v1Users.PUT("/:id", users.UpdateUser)
 			v1Users.DELETE("/:id", users.DeleteUser)
 		}
 	}

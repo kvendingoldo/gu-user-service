@@ -10,9 +10,12 @@ vet: ## Run go vet against code.
 
 ##@ Build
 swag:
-	swag init -g routes/ApplicationV1.go --output ./api
+	swag init -g routes/ApplicationV1.go --output ./api/swagger/
 
-build: swag fmt vet  ## Build service binary.
+proto:
+	echo "todo"
+
+build: swag proto fmt vet  ## Build service binary.
 	go build -o bin/service main.go
 
 run: swag fmt vet ## Run service from your laptop.
