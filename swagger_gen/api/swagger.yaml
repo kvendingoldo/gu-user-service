@@ -1,6 +1,6 @@
 basePath: /v1
 definitions:
-  models.User:
+  model.User:
     properties:
       coordinates:
         example: 39.12355, 27.64538
@@ -25,10 +25,14 @@ definitions:
     type: object
   users.NewUserRequest:
     properties:
+      coordinates:
+        example: 39.12355, 27.64538
+        type: string
       name:
-        example: Paracetamol
+        example: Bill
         type: string
     required:
+    - coordinates
     - name
     type: object
 host: localhost:8080
@@ -53,7 +57,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.User'
+              $ref: '#/definitions/model.User'
             type: array
         "400":
           description: Bad Request
@@ -83,7 +87,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/model.User'
         "400":
           description: Bad Request
           schema:
@@ -124,7 +128,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/model.User'
         "400":
           description: Bad Request
           schema:
@@ -149,7 +153,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/model.User'
       responses:
         "200":
           description: ok

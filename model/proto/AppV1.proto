@@ -3,7 +3,7 @@ package v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "./api/proto/v1";
+option go_package = "./api;proto";
 
 message User {
   int64 id = 1;

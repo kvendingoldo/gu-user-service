@@ -1,9 +1,9 @@
-package routes
+package router
 
 import (
 	"github.com/gin-gonic/gin"
-	_ "github.com/kvendingoldo/gu-user-service/api/swagger"
 	"github.com/kvendingoldo/gu-user-service/controllers/users"
+	_ "github.com/kvendingoldo/gu-user-service/swagger_gen/api"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )

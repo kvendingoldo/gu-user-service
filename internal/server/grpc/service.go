@@ -1,9 +1,9 @@
-package service
+package grpc
 
 import (
 	"context"
-	"github.com/kvendingoldo/gu-user-service/models"
-	v1 "github.com/kvendingoldo/gu-user-service/pkg/api/proto/v1"
+	"github.com/kvendingoldo/gu-user-service/model"
+	v1 "github.com/kvendingoldo/gu-user-service/proto_gen/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -24,7 +24,7 @@ func (UserServiceServer) Update(context.Context, *v1.UpdateRequest) (*v1.UpdateR
 }
 func (UserServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (*v1.DeleteResponse, error) {
 	medicineID := int(req.Id)
-	err := models.DeleteUser(medicineID)
+	err := model.DeleteUser(medicineID)
 	if err != nil {
 		// TODO
 		return nil, status.Errorf(codes.Internal, err.Error())

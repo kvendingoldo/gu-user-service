@@ -1,0 +1,6 @@
+server:
+  restPort: 8080
+  grpcPort: 9000
+
+db:
+  dsn: "guadmin:gupass@tcp(127.0.0.1:3306)/user?charset=utf8&parseTime=True&loc=Local"

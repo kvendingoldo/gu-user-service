@@ -2,33 +2,50 @@ package config
 
 import (
 	"github.com/spf13/viper"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
 )
 
 var Config AppConfig
 
-type AppConfig struct {
-	DB *gorm.DB
-}
-
 func init() {
-	Config = getConfig()
-}
-
-func getConfig() AppConfig {
 	bindEnvVars([]string{})
 
-	var config AppConfig
+	viper.SetConfigName("config")
+	viper.AddConfigPath("config")
+	viper.SetConfigType("yml")
 
-	db, err := GormOpen()
+	var cfg RawConfig
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Error reading checks files, %s", err)
+	}
+
+	err := viper.Unmarshal(&cfg)
+	if err != nil {
+		log.Fatalf("unable to decode into struct, %v", err)
+	}
+
+	Config = AppConfig{
+		RestPort: cfg.Server.RestPort,
+		GRPCPort: cfg.Server.GRPCPort,
+	}
+
+	db, err := gorm.Open(mysql.New(mysql.Config{
+		DSN:                       cfg.DB.DSN, // data source name
+		DefaultStringSize:         256,        // default size for string fields
+		DisableDatetimePrecision:  true,       // disable datetime precision, which not supported before MySQL 5.6
+		DontSupportRenameIndex:    true,       // drop & create when rename index, rename index not supported before MySQL 5.7, MariaDB
+		DontSupportRenameColumn:   true,       // `change` when rename column, rename column not supported before MySQL 8, MariaDB
+		SkipInitializeWithVersion: false,      // auto configure based on currently MySQL version
+	}), &gorm.Config{})
+
 	if err != nil {
 		// todo
 	}
 
-	config.DB = db
-
-	return config
+	Config.DB = db
 }
 
 func bindEnvVars(vars []string) {

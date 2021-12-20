@@ -3,7 +3,8 @@ package users
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kvendingoldo/gu-user-service/controllers"
-	"github.com/kvendingoldo/gu-user-service/models"
+	"github.com/kvendingoldo/gu-user-service/model"
+	"github.com/kvendingoldo/gu-user-service/model/errors"
 	"net/http"
 	"strconv"
 )
@@ -12,14 +13,14 @@ import (
 // @Tags user
 // @Summary Get all users
 // @Description Get all users on the system
-// @Success 200 {object} []models.User
+// @Success 200 {object} []model.User
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
 // @Router /users [get]
 func GetAllUsers(c *gin.Context) {
-	var users []models.User
+	var users []model.User
 
-	err := models.GetAllUsers(&users)
+	err := model.GetAllUsers(&users)
 	if err != nil {
 		//appError := errorModels.NewAppErrorWithType(errorModels.UnknownError)
 		//_ = c.Error(appError)
@@ -34,19 +35,19 @@ func GetAllUsers(c *gin.Context) {
 // @Summary Get users by ID
 // @Description Get users by ID on the system
 // @Param id path int true "id of user"
-// @Success 200 {object} models.User
+// @Success 200 {object} model.User
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
 // @Router /users/{id} [get]
 func GetUsersByID(c *gin.Context) {
-	var user models.User
+	var user model.User
 
 	userID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return
 	}
 
-	err = models.GetUserByID(&user, userID)
+	err = model.GetUserByID(&user, userID)
 	if err != nil {
 		//appError := errorModels.NewAppError(err, errorModels.ValidationError)
 		//_ = c.Error(appError)
@@ -63,27 +64,29 @@ func GetUsersByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param data body NewUserRequest true "body data"
-// @Success 200 {object} models.User
+// @Success 200 {object} model.User
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
 // @Router /users [post]
 func NewUser(c *gin.Context) {
-	var request NewUserRequest
+	var req NewUserRequest
 
-	if err := controllers.BindJSON(c, &request); err != nil {
-		//appError := errorModels.NewAppError(err, errorModels.ValidationError)
-		//_ = c.Error(appError)
+	if err := controllers.BindJSON(c, &req); err != nil {
+		appError := errors.NewAppError(err, errors.ValidationError)
+		_ = c.Error(appError)
 		return
 	}
-	user := models.User{
-		Name: request.Name,
+
+	user := model.User{
+		Name:        req.Name,
+		Coordinates: req.Coordinates,
 	}
 
-	//err := models.CreateMedicine(&medicine)
-	//if err != nil {
-	//	_ = c.Error(err)
-	//	return
-	//}
+	err := model.CreateUser(&user)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
 
 	c.JSON(http.StatusOK, user)
 }
@@ -93,7 +96,7 @@ func NewUser(c *gin.Context) {
 // @Summary Update user
 // @Description Update user on the system
 // @Param id path int true "id of user"
-// @Param input body models.User true "User updated info"
+// @Param input body model.User true "User updated info"
 // @Success 200 {string} string	"ok"
 // @Router /users/{id} [put]
 func UpdateUser(c *gin.Context) {
@@ -118,7 +121,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	user, err := models.UpdateUser(userID, requestMap)
+	user, err := model.UpdateUser(userID, requestMap)
 	if err != nil {
 		_ = c.Error(err)
 		return
@@ -143,7 +146,7 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	err = models.DeleteUser(medicineID)
+	err = model.DeleteUser(medicineID)
 	if err != nil {
 		//_ = c.Error(err)
 		return

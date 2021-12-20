@@ -10,14 +10,15 @@ vet: ## Run go vet against code.
 
 ##@ Build
 swag:
-	swag init -g routes/ApplicationV1.go --output ./api/swagger/
+	swag init -g internal/server/rest/router/*.go --output ./swagger_gen/api
 
 proto:
-	protoc --proto_path=api/proto/v1 --go-grpc_out=pkg --go_out=pkg api/proto/v1/*.proto
+	mkdir -p ./proto_gen
+	protoc --proto_path=model/proto/ --go-grpc_out=./proto_gen --go_out=./proto_gen model/proto/*.proto
 
 build: swag proto fmt vet  ## Build service binary.
-	go build -o bin/service main.go
+	go build -o bin/service cmd/app/main.go
 
 run: swag fmt vet ## Run service from your laptop.
-	go run ./main.go
+	go run ./cmd/app/main.go
 

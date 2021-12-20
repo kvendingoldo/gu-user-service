@@ -1,12 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	cfg "github.com/kvendingoldo/gu-user-service/config"
-	"github.com/kvendingoldo/gu-user-service/models"
-	v1 "github.com/kvendingoldo/gu-user-service/pkg/api/proto/v1"
-	"github.com/kvendingoldo/gu-user-service/pkg/service"
-	"github.com/kvendingoldo/gu-user-service/routes"
+	grpcSvc "github.com/kvendingoldo/gu-user-service/internal/server/grpc"
+	"github.com/kvendingoldo/gu-user-service/internal/server/rest/router"
+	"github.com/kvendingoldo/gu-user-service/model"
+	v1 "github.com/kvendingoldo/gu-user-service/proto_gen/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -14,13 +15,13 @@ import (
 )
 
 func startGRPCServer() {
-	listener, err := net.Listen("tcp", ":9000")
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Config.GRPCPort))
 	if err != nil {
 		log.Fatalf("could not attach listener to port: %v", err)
 	}
 
 	server := grpc.NewServer()
-	svc := &service.UserServiceServer{}
+	svc := &grpcSvc.UserServiceServer{}
 	v1.RegisterUserServiceServer(server, svc)
 	reflection.Register(server)
 
@@ -37,28 +38,22 @@ func startGRPCServer() {
 }
 
 func startHTTPServer() {
-	router := gin.Default()
+	ginRouter := gin.Default()
 
-	routes.ApplicationV1Router(router)
+	router.ApplicationV1Router(ginRouter)
 
-	if err := router.Run(":8080"); err != nil {
+	if err := ginRouter.Run(fmt.Sprintf(":%v", cfg.Config.RestPort)); err != nil {
 		log.Fatalf("could not start http server: %v", err)
 	}
 }
 
 func init() {
-	if err := cfg.Config.DB.AutoMigrate(&models.User{}); err != nil {
+	if err := cfg.Config.DB.AutoMigrate(&model.User{}); err != nil {
 		return
 	}
-
 }
 
 func main() {
-	//go
 	startGRPCServer()
 	startHTTPServer()
-
-	//sig := make(chan os.Signal)
-	//signal.Notify(sig, os.Interrupt, os.Kill)
-	//<-sig
 }

@@ -1,10 +1,10 @@
-package models
+package model
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/kvendingoldo/gu-user-service/config"
-	errorModels "github.com/kvendingoldo/gu-user-service/models/errors"
+	"github.com/kvendingoldo/gu-user-service/model/errors"
 	"gorm.io/gorm"
 	"time"
 )
@@ -15,6 +15,30 @@ type User struct {
 	Coordinates string    `json:"coordinates" example:"39.12355, 27.64538"`
 	CreatedAt   time.Time `json:"created_at,omitempty" example:"2021-02-24 20:19:39" gorm:"autoCreateTime:mili"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty" example:"2021-02-24 20:19:39" gorm:"autoUpdateTime:mili"`
+}
+
+// CreateUser ... Insert New data
+func CreateUser(user *User) (err error) {
+	err = config.Config.DB.Create(user).Error
+	if err != nil {
+		byteErr, _ := json.Marshal(err)
+		var newError errors.GormErr
+		err = json.Unmarshal(byteErr, &newError)
+		if err != nil {
+			return err
+		}
+
+		switch newError.Number {
+		case 1062:
+			err = errors.NewAppErrorWithType(errors.ResourceAlreadyExists)
+			return
+
+		default:
+			err = errors.NewAppErrorWithType(errors.UnknownError)
+		}
+	}
+
+	return
 }
 
 // GetAllUsers Fetch all user data
@@ -54,7 +78,7 @@ func UpdateUser(id int, userMap map[string]interface{}) (user User, err error) {
 	// err = config.DB.Save(medicine).Error
 	if err != nil {
 		byteErr, _ := json.Marshal(err)
-		var newError errorModels.GormErr
+		var newError errors.GormErr
 		err = json.Unmarshal(byteErr, &newError)
 		if err != nil {
 			return
