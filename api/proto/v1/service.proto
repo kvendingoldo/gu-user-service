@@ -1,19 +1,60 @@
 syntax = "proto3";
+package v1;
 
-package user;
-option go_package = "./";
+import "google/protobuf/timestamp.proto";
 
+option go_package = "./api/proto/v1";
+
+message User {
+  int64 id = 1;
+  string name = 2;
+  string coordinates = 3;
+  google.protobuf.Timestamp reminder = 4;
+}
+
+message CreateRequest {
+  string api = 1;
+  User user = 2;
+}
+
+message CreateResponse {
+  string api = 1;
+  int64 id = 2;
+}
+
+message ReadRequest {
+  string api = 1;
+  int64 id = 2;
+}
+
+message ReadResponse {
+  string api = 1;
+  User user = 2;
+}
+
+message UpdateRequest {
+  string api = 1;
+  User user = 2;
+}
+
+message UpdateResponse {
+  string api = 1;
+  int64 updated = 2;
+}
+
+message DeleteRequest {
+  string api = 1;
+  int64 id = 2;
+}
+message DeleteResponse {
+  string api = 1;
+  int64 deleted = 2;
+}
+
+// TODO should be bidirectional streaming RPC
 service UserService{
-  rpc CreateUser (CreateUserInput) returns (Result) {}
-}
-
-message CreateUserInput {
-  string name = 1;
-  string coordinates = 2;
-}
-
-message Result {
-  int32 code = 1;
-  string message = 2;
-  string data = 3;
+  rpc Create(CreateRequest) returns(CreateResponse);
+  rpc Read(ReadRequest) returns (ReadResponse);
+  rpc Update(UpdateRequest) returns (UpdateResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
 }

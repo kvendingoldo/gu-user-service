@@ -13,7 +13,7 @@ swag:
 	swag init -g routes/ApplicationV1.go --output ./api/swagger/
 
 proto:
-	echo "todo"
+	protoc --proto_path=api/proto/v1 --go-grpc_out=pkg --go_out=pkg api/proto/v1/*.proto
 
 build: swag proto fmt vet  ## Build service binary.
 	go build -o bin/service main.go

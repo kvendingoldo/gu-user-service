@@ -2,8 +2,8 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/kvendingoldo/gu-user-service/api/swagger"
 	"github.com/kvendingoldo/gu-user-service/controllers/users"
-	_ "github.com/kvendingoldo/gu-user-service/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
