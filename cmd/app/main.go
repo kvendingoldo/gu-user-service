@@ -30,11 +30,6 @@ func startGRPCServer() {
 			log.Fatalf("could not start grpc server: %v", err)
 		}
 	}()
-
-	//err = server.Serve(listener)
-	//if err != nil {
-	//	// todo
-	//}
 }
 
 func startHTTPServer() {

@@ -9,7 +9,7 @@ definitions:
         example: "2021-02-24 20:19:39"
         type: string
       id:
-        example: 123
+        example: 23
         type: integer
       name:
         example: Steven

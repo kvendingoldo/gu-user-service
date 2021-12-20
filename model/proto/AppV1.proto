@@ -51,7 +51,7 @@ message DeleteResponse {
   int64 deleted = 2;
 }
 
-// TODO should be bidirectional streaming RPC
+// TODO: should be bidirectional streaming RPC
 service UserService{
   rpc Create(CreateRequest) returns(CreateResponse);
   rpc Read(ReadRequest) returns (ReadResponse);

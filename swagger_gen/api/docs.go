@@ -218,7 +218,7 @@ var doc = `{
                 },
                 "id": {
                     "type": "integer",
-                    "example": 123
+                    "example": 23
                 },
                 "name": {
                     "type": "string",

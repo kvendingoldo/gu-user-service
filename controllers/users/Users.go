@@ -128,7 +128,6 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
-
 }
 
 // DeleteUser godoc
@@ -139,14 +138,14 @@ func UpdateUser(c *gin.Context) {
 // @Success 200 {string} string	"ok"
 // @Router /users/{id} [delete]
 func DeleteUser(c *gin.Context) {
-	medicineID, err := strconv.Atoi(c.Param("id"))
+	userID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		//appError := errorModels.NewAppError(errors.New("param id is necessary in the url"), errorModels.ValidationError)
 		//_ = c.Error(appError)
 		return
 	}
 
-	err = model.DeleteUser(medicineID)
+	err = model.DeleteUser(userID)
 	if err != nil {
 		//_ = c.Error(err)
 		return

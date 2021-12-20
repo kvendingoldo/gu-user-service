@@ -42,7 +42,7 @@ func init() {
 	}), &gorm.Config{})
 
 	if err != nil {
-		// todo
+		// TODO: Add later
 	}
 
 	Config.DB = db
