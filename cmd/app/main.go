@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	cfg "github.com/kvendingoldo/gu-user-service/config"
 	grpcSvc "github.com/kvendingoldo/gu-user-service/internal/server/grpc"
-	"github.com/kvendingoldo/gu-user-service/internal/server/rest/router"
+	"github.com/kvendingoldo/gu-user-service/internal/server/rest"
 	"github.com/kvendingoldo/gu-user-service/model"
 	v1 "github.com/kvendingoldo/gu-user-service/proto_gen/api"
 	"google.golang.org/grpc"
@@ -35,7 +35,7 @@ func startGRPCServer() {
 func startHTTPServer() {
 	ginRouter := gin.Default()
 
-	router.ApplicationV1Router(ginRouter)
+	rest.ApplicationRouter(ginRouter)
 
 	if err := ginRouter.Run(fmt.Sprintf(":%v", cfg.Config.RestPort)); err != nil {
 		log.Fatalf("could not start http server: %v", err)

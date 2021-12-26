@@ -9,11 +9,12 @@ import (
 )
 
 type User struct {
-	ID          int       `json:"id" example:"23" gorm:"primaryKey"`
-	Name        string    `json:"name" example:"Steven" gorm:"unique"`
-	Coordinates string    `json:"coordinates" example:"39.12355, 27.64538"`
-	CreatedAt   time.Time `json:"created_at,omitempty" example:"2021-02-24 20:19:39" gorm:"autoCreateTime:mili"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" example:"2021-02-24 20:19:39" gorm:"autoUpdateTime:mili"`
+	ID          int64  `json:"id" example:"23" gorm:"primaryKey"`
+	Name        string `json:"name" example:"Steven" gorm:"unique"`
+	Coordinates string `json:"coordinates" example:"39.12355, 27.64538"`
+
+	CreatedAt time.Time `json:"created_at,omitempty" example:"2021-02-24 20:19:39" gorm:"autoCreateTime:mili"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" example:"2021-02-24 20:19:39" gorm:"autoUpdateTime:mili"`
 }
 
 // CreateUser ... Insert New data
@@ -49,7 +50,7 @@ func GetAllUsers(user *[]User) (err error) {
 }
 
 // GetUserByID ... Fetch only one user by Id
-func GetUserByID(user *User, id int) (err error) {
+func GetUserByID(user *User, id int64) (err error) {
 	err = config.Config.DB.Where("id = ?", id).First(user).Error
 
 	if err != nil {
@@ -65,7 +66,7 @@ func GetUserByID(user *User, id int) (err error) {
 }
 
 // UpdateUser ... Update user
-func UpdateUser(id int, userMap map[string]interface{}) (user User, err error) {
+func UpdateUser(id int64, userMap map[string]interface{}) (user User, err error) {
 	user.ID = id
 	err = config.Config.DB.Model(&user).
 		Select("name", "coordinates").
@@ -93,7 +94,7 @@ func UpdateUser(id int, userMap map[string]interface{}) (user User, err error) {
 }
 
 // DeleteUser ... Delete user
-func DeleteUser(id int) (err error) {
+func DeleteUser(id int64) (err error) {
 	tx := config.Config.DB.Delete(&User{}, id)
 	if tx.Error != nil {
 		//err = modelErrors.NewAppErrorWithType(modelErrors.UnknownError)

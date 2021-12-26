@@ -10,7 +10,7 @@ vet: ## Run go vet against code.
 
 ##@ Build
 swag:
-	swag init -g internal/server/rest/router/*.go --output ./swagger_gen/api
+	swag init -g internal/server/rest/*.go --output ./swagger_gen/api
 
 proto:
 	mkdir -p ./proto_gen
@@ -19,6 +19,6 @@ proto:
 build: swag proto fmt vet  ## Build service binary.
 	go build -o bin/service cmd/app/main.go
 
-run: swag fmt vet ## Run service from your laptop.
+run: swag proto fmt vet ## Run service from your laptop.
 	go run ./cmd/app/main.go
 

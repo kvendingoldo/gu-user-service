@@ -1,4 +1,4 @@
-package router
+package rest
 
 import (
 	"github.com/gin-gonic/gin"
@@ -22,7 +22,7 @@ import (
 
 // @host localhost:8080
 // @BasePath /v1
-func ApplicationV1Router(router *gin.Engine) {
+func ApplicationRouter(router *gin.Engine) {
 
 	v1 := router.Group("/v1")
 	{
@@ -36,7 +36,7 @@ func ApplicationV1Router(router *gin.Engine) {
 		{
 			v1Users.POST("/", users.NewUser)
 			v1Users.GET("/", users.GetAllUsers)
-			v1Users.GET("/:id", users.GetUsersByID)
+			v1Users.GET("/:id", users.GetUserByID)
 			v1Users.PUT("/:id", users.UpdateUser)
 			v1Users.DELETE("/:id", users.DeleteUser)
 		}

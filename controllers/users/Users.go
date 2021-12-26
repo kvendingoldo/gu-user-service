@@ -39,10 +39,10 @@ func GetAllUsers(c *gin.Context) {
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
 // @Router /users/{id} [get]
-func GetUsersByID(c *gin.Context) {
+func GetUserByID(c *gin.Context) {
 	var user model.User
 
-	userID, err := strconv.Atoi(c.Param("id"))
+	userID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		return
 	}
@@ -100,7 +100,7 @@ func NewUser(c *gin.Context) {
 // @Success 200 {string} string	"ok"
 // @Router /users/{id} [put]
 func UpdateUser(c *gin.Context) {
-	userID, err := strconv.Atoi(c.Param("id"))
+	userID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		//appError := errorModels.NewAppError(errors.New("param id is necessary in the url"), errorModels.ValidationError)
 		//_ = c.Error(appError)
@@ -138,7 +138,7 @@ func UpdateUser(c *gin.Context) {
 // @Success 200 {string} string	"ok"
 // @Router /users/{id} [delete]
 func DeleteUser(c *gin.Context) {
-	userID, err := strconv.Atoi(c.Param("id"))
+	userID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		//appError := errorModels.NewAppError(errors.New("param id is necessary in the url"), errorModels.ValidationError)
 		//_ = c.Error(appError)
