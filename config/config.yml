@@ -1,6 +1,10 @@
+ports:
+  rest: 8082
+  grpc: 9092
+
 server:
-  restPort: 8080
-  grpcPort: 9000
+  logLevel: "INFO"
 
 db:
-  dsn: "guadmin:gupass@tcp(127.0.0.1:3306)/user?charset=utf8&parseTime=True&loc=Local"
+  dsn: "gu_user:gu_pass@tcp(127.0.0.1:3306)/user?charset=utf8&parseTime=True&loc=Local"
+  logLevel: "INFO"

@@ -1,0 +1,158 @@
+definitions:
+  models.User:
+    properties:
+      created_at:
+        example: "2021-02-24 20:19:39"
+        type: string
+      id:
+        example: 23
+        type: integer
+      lat:
+        example: 39.12355
+        type: number
+      lon:
+        example: 27.64538
+        type: number
+      name:
+        example: Steven
+        type: string
+      updated_at:
+        example: "2021-02-24 20:19:39"
+        type: string
+    type: object
+  v1.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  v1.NewUserRequest:
+    properties:
+      lat:
+        example: 39.12355
+        type: number
+      lon:
+        example: 27.64538
+        type: number
+      name:
+        example: Bill
+        type: string
+    required:
+    - name
+    type: object
+info:
+  contact: {}
+paths:
+  /users:
+    get:
+      description: Get all users on the system
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.MessageResponse'
+      summary: Get all users
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Create new user on the system
+      parameters:
+      - description: body data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.NewUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.MessageResponse'
+      summary: Create new user
+      tags:
+      - user
+  /users/{id}:
+    delete:
+      description: Delete user on the system
+      parameters:
+      - description: id of user
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Delete user
+      tags:
+      - user
+    get:
+      description: Get users by ID on the system
+      parameters:
+      - description: id of user
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.MessageResponse'
+      summary: Get users by ID
+      tags:
+      - user
+    put:
+      description: Update user on the system
+      parameters:
+      - description: id of user
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User updated info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Update user
+      tags:
+      - user
+swagger: "2.0"

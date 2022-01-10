@@ -9,12 +9,13 @@ vet: ## Run go vet against code.
 	go vet ./...
 
 ##@ Build
-swag:
-	swag init -g internal/server/rest/*.go --output ./swagger_gen/api
+swag: ## Generate swagger API
+	#swag init --parseDependency --parseInternal --generatedTime -g internal/apis/rest/*/*.go --output ./swagger_gen/api
+	swag init --generatedTime -g internal/apis/rest/*/*.go --output ./swagger_gen/api
 
-proto:
+proto: ## Generate proto code
 	mkdir -p ./proto_gen
-	protoc --proto_path=model/proto/ --go-grpc_out=./proto_gen --go_out=./proto_gen model/proto/*.proto
+	protoc --proto_path=internal/apis/grpc/v1 --go-grpc_out=./proto_gen --go_out=./proto_gen internal/apis/grpc/v1/*.proto
 
 build: swag proto fmt vet  ## Build service binary.
 	go build -o bin/service cmd/app/main.go
@@ -22,3 +23,9 @@ build: swag proto fmt vet  ## Build service binary.
 run: swag proto fmt vet ## Run service from your laptop.
 	go run ./cmd/app/main.go
 
+##@ Test
+lint: ## Run Go linter
+	~/go/bin/golangci-lint run ./...
+
+test: ## Run Go tests
+	go test ./...

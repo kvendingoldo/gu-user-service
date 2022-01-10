@@ -1,10 +1,10 @@
-package users
+package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kvendingoldo/gu-user-service/controllers"
-	"github.com/kvendingoldo/gu-user-service/model"
-	"github.com/kvendingoldo/gu-user-service/model/errors"
+	appErrors "github.com/kvendingoldo/gu-common/pkg/errors"
+	"github.com/kvendingoldo/gu-user-service/internal/apis/rest"
+	"github.com/kvendingoldo/gu-user-service/internal/models"
 	"net/http"
 	"strconv"
 )
@@ -13,14 +13,14 @@ import (
 // @Tags user
 // @Summary Get all users
 // @Description Get all users on the system
-// @Success 200 {object} []model.User
+// @Success 200 {object} []models.User
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
 // @Router /users [get]
 func GetAllUsers(c *gin.Context) {
-	var users []model.User
+	var users []models.User
 
-	err := model.GetAllUsers(&users)
+	err := models.GetAllUsers(&users)
 	if err != nil {
 		//appError := errorModels.NewAppErrorWithType(errorModels.UnknownError)
 		//_ = c.Error(appError)
@@ -35,19 +35,19 @@ func GetAllUsers(c *gin.Context) {
 // @Summary Get users by ID
 // @Description Get users by ID on the system
 // @Param id path int true "id of user"
-// @Success 200 {object} model.User
+// @Success 200 {object} models.User
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
 // @Router /users/{id} [get]
 func GetUserByID(c *gin.Context) {
-	var user model.User
+	var user models.User
 
 	userID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		return
 	}
 
-	err = model.GetUserByID(&user, userID)
+	err = models.GetUserByID(&user, userID)
 	if err != nil {
 		//appError := errorModels.NewAppError(err, errorModels.ValidationError)
 		//_ = c.Error(appError)
@@ -64,25 +64,26 @@ func GetUserByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param data body NewUserRequest true "body data"
-// @Success 200 {object} model.User
+// @Success 200 {object} models.User
 // @Failure 400 {object} MessageResponse
 // @Failure 500 {object} MessageResponse
 // @Router /users [post]
 func NewUser(c *gin.Context) {
 	var req NewUserRequest
 
-	if err := controllers.BindJSON(c, &req); err != nil {
-		appError := errors.NewAppError(err, errors.ValidationError)
+	if err := rest.BindJSON(c, &req); err != nil {
+		appError := appErrors.NewAppError(err, appErrors.ValidationError)
 		_ = c.Error(appError)
 		return
 	}
 
-	user := model.User{
-		Name:        req.Name,
-		Coordinates: req.Coordinates,
+	user := models.User{
+		Name:      req.Name,
+		Latitude:  req.Latitude,
+		Longitude: req.Longitude,
 	}
 
-	err := model.CreateUser(&user)
+	err := models.CreateUser(&user)
 	if err != nil {
 		_ = c.Error(err)
 		return
@@ -96,7 +97,7 @@ func NewUser(c *gin.Context) {
 // @Summary Update user
 // @Description Update user on the system
 // @Param id path int true "id of user"
-// @Param input body model.User true "User updated info"
+// @Param input body models.User true "User updated info"
 // @Success 200 {string} string	"ok"
 // @Router /users/{id} [put]
 func UpdateUser(c *gin.Context) {
@@ -108,20 +109,14 @@ func UpdateUser(c *gin.Context) {
 	}
 	var requestMap map[string]interface{}
 
-	err = controllers.BindJSONMap(c, &requestMap)
+	err = rest.BindJSONMap(c, &requestMap)
 	if err != nil {
 		//appError := errorModels.NewAppError(err, errorModels.ValidationError)
 		//_ = c.Error(appError)
 		return
 	}
 
-	err = updateValidation(requestMap)
-	if err != nil {
-		_ = c.Error(err)
-		return
-	}
-
-	user, err := model.UpdateUser(userID, requestMap)
+	user, err := models.UpdateUser(userID, requestMap)
 	if err != nil {
 		_ = c.Error(err)
 		return
@@ -145,7 +140,7 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	err = model.DeleteUser(userID)
+	err = models.DeleteUser(userID)
 	if err != nil {
 		//_ = c.Error(err)
 		return

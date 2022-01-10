@@ -1,8 +1,7 @@
-package rest
+package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kvendingoldo/gu-user-service/controllers/users"
 	_ "github.com/kvendingoldo/gu-user-service/swagger_gen/api"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -17,12 +16,9 @@ import (
 // @contact.url http://github.com/kvendingoldo
 // @contact.email kvendingoldo@gmail.com
 
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
 // @host localhost:8080
 // @BasePath /v1
-func ApplicationRouter(router *gin.Engine) {
+func NewRouter(router *gin.Engine) {
 
 	v1 := router.Group("/v1")
 	{
@@ -34,11 +30,11 @@ func ApplicationRouter(router *gin.Engine) {
 		// Users
 		v1Users := v1.Group("/users")
 		{
-			v1Users.POST("/", users.NewUser)
-			v1Users.GET("/", users.GetAllUsers)
-			v1Users.GET("/:id", users.GetUserByID)
-			v1Users.PUT("/:id", users.UpdateUser)
-			v1Users.DELETE("/:id", users.DeleteUser)
+			v1Users.POST("/", NewUser)
+			v1Users.GET("/", GetAllUsers)
+			v1Users.GET("/:id", GetUserByID)
+			v1Users.PUT("/:id", UpdateUser)
+			v1Users.DELETE("/:id", DeleteUser)
 		}
 	}
 }

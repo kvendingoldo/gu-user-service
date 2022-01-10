@@ -3,10 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	cfg "github.com/kvendingoldo/gu-user-service/config"
-	grpcSvc "github.com/kvendingoldo/gu-user-service/internal/server/grpc"
-	"github.com/kvendingoldo/gu-user-service/internal/server/rest"
-	"github.com/kvendingoldo/gu-user-service/model"
+	guLogger "github.com/kvendingoldo/gu-common/pkg/logger"
+	"github.com/kvendingoldo/gu-user-service/config"
+	v1Grpc "github.com/kvendingoldo/gu-user-service/internal/apis/grpc/v1"
+	v1Rest "github.com/kvendingoldo/gu-user-service/internal/apis/rest/v1"
+	"github.com/kvendingoldo/gu-user-service/internal/models"
 	v1 "github.com/kvendingoldo/gu-user-service/proto_gen/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -15,13 +16,13 @@ import (
 )
 
 func startGRPCServer() {
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Config.GRPCPort))
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", config.Config.GRPCPort))
 	if err != nil {
 		log.Fatalf("could not attach listener to port: %v", err)
 	}
 
 	server := grpc.NewServer()
-	svc := &grpcSvc.UserServiceServer{}
+	svc := &v1Grpc.UserServiceServer{}
 	v1.RegisterUserServiceServer(server, svc)
 	reflection.Register(server)
 
@@ -33,19 +34,22 @@ func startGRPCServer() {
 }
 
 func startHTTPServer() {
-	ginRouter := gin.Default()
+	router := gin.New()
+	router.Use(guLogger.GinLogger(config.Config.Logger), gin.Recovery())
 
-	rest.ApplicationRouter(ginRouter)
+	v1Rest.NewRouter(router)
 
-	if err := ginRouter.Run(fmt.Sprintf(":%v", cfg.Config.RestPort)); err != nil {
+	if err := router.Run(fmt.Sprintf(":%v", config.Config.RestPort)); err != nil {
 		log.Fatalf("could not start http server: %v", err)
 	}
 }
 
 func init() {
-	if err := cfg.Config.DB.AutoMigrate(&model.User{}); err != nil {
-		return
+	err := config.Setup()
+	if err != nil {
+		fmt.Println(err)
 	}
+	models.Setup()
 }
 
 func main() {
