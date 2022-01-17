@@ -16,20 +16,23 @@ fmt: ## Run go fmt against code.
 vet: ## Run go vet against code.
 	go vet ./...
 
+##@ Generate
+gen_grpc: ## Generate gRPC client/server code
+	mkdir -p ./gen/go
+	protoc -I . --go_out ./gen/go/ --go_opt paths=source_relative --go-grpc_out ./gen/go/ --go-grpc_opt paths=source_relative ./api/v1/service.proto
+
+gen_grpc_gw: ## Generate gRPC gateway code
+	mkdir -p ./gen/go
+	protoc -I . --grpc-gateway_out ./gen/go --grpc-gateway_opt logtostderr=true --grpc-gateway_opt paths=source_relative --grpc-gateway_opt generate_unbound_methods=true ./api/v1/service.proto
+
+gen: gen_grpc gen_grpc_gw
+	@echo "Generate code $(OK_STRING)"
+
 ##@ Build
-swag: ## Generate swagger API
-	mkdir -p ./swagger_gen/api
-	#swag init --parseDependency --parseInternal --generatedTime -g internal/apis/rest/*/*.go --output ./swagger_gen/api
-	swag init --generatedTime --g internal/apis/rest/*/main.go --output ./swagger_gen/api
-
-proto: ## Generate proto code
-	mkdir -p ./proto_gen
-	protoc --proto_path=internal/apis/grpc/v1 --go-grpc_out=./proto_gen --go_out=./proto_gen internal/apis/grpc/v1/*.proto
-
-build: swag proto fmt vet  ## Build service binary.
+build: gen fmt vet  ## Build service binary.
 	go build -o bin/service cmd/app/main.go
 
-run: swag proto fmt vet ## Run service from your laptop.
+run: gen fmt vet ## Run service from your laptop.
 	go run ./cmd/app/main.go
 
 ##@ Test
@@ -41,5 +44,17 @@ test: ## Run Go tests
 
 ##@ Install
 install-deps:
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	@echo "Install protoc $(OK_STRING)"
+	go install \
+		github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+		github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+		google.golang.org/protobuf/cmd/protoc-gen-go \
+		google.golang.org/grpc/cmd/protoc-gen-go-grpc \
+		google.golang.org/protobuf/cmd/protoc-gen-go
+	go get \
+		github.com/bufbuild/buf/cmd/buf \
+		github.com/bufbuild/buf/cmd/protoc-gen-buf-breaking \
+		github.com/bufbuild/buf/cmd/protoc-gen-buf-lint
+	@echo "Install dependencies $(OK_STRING)"
+
+
+# go mod !!!

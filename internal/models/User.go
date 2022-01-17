@@ -7,7 +7,7 @@ import (
 	appErrors "github.com/kvendingoldo/gu-common/pkg/errors"
 	"github.com/kvendingoldo/gu-user-service/config"
 
-	v1 "github.com/kvendingoldo/gu-user-service/proto_gen/api"
+	v1 "github.com/kvendingoldo/gu-user-service/gen/go/api/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 	"time"

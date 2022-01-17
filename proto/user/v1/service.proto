@@ -1,10 +1,11 @@
 syntax = "proto3";
-package v1;
+package api.v1;
+option go_package = "github.com/kvendingoldo/gu-user-service/gen/go/api/v1";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-option go_package = "./api;proto";
+
 
 message User {
   int64 id = 1;
@@ -19,10 +20,10 @@ message GetAllResponse {
   repeated User users = 1;
 }
 
-message GetByIdRequest {
+message GetByIDRequest {
   int64 id = 1;
 }
-message GetByIdResponse {
+message GetByIDResponse {
   User user = 1;
 }
 
@@ -51,7 +52,7 @@ message DeleteResponse {
 // example: https://github.com/pahanini/go-grpc-bidirectional-streaming-example
 service UserService{
   rpc GetAll(google.protobuf.Empty) returns(GetAllResponse);
-  rpc GetByID(GetByIdRequest) returns(GetByIdResponse);
+  rpc GetByID(GetByIDRequest) returns(GetByIDResponse);
   rpc New(NewRequest) returns(NewResponse);
   rpc Update(UpdateRequest) returns (UpdateResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);

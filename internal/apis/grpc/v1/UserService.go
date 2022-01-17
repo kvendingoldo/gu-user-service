@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	v1 "github.com/kvendingoldo/gu-user-service/gen/go/api/v1"
 	"github.com/kvendingoldo/gu-user-service/internal/models"
-	v1 "github.com/kvendingoldo/gu-user-service/proto_gen/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
