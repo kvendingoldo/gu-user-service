@@ -9,8 +9,12 @@ lint:
   except:
     - PACKAGE_VERSION_SUFFIX
     - FIELD_LOWER_SNAKE_CASE
+    - PACKAGE_DIRECTORY_MATCH
     - SERVICE_SUFFIX
 breaking:
   use:
     - FILE
 
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway

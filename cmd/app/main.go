@@ -7,15 +7,17 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	guLogger "github.com/kvendingoldo/gu-common/pkg/logger"
 	"github.com/kvendingoldo/gu-user-service/config"
-	v1 "github.com/kvendingoldo/gu-user-service/gen/go/api/v1"
 	v1Grpc "github.com/kvendingoldo/gu-user-service/internal/apis/grpc/v1"
 	"github.com/kvendingoldo/gu-user-service/internal/models"
+	v1 "github.com/kvendingoldo/gu-user-service/pkg/user_api/proto/user/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"net/http"
+	"os"
+	"time"
 )
 
 func startGRPCServer() {
@@ -36,6 +38,20 @@ func startGRPCServer() {
 	}()
 }
 
+func SwagDoc(c *gin.Context) {
+	schemaPath := "static/api.swagger.json"
+	fInfo, _ := os.Stat(schemaPath)
+	data := map[string]string{
+		"EnvName":    "ab",
+		"AppName":    "cd",
+		"JsonFile":   fmt.Sprintf("/%s", schemaPath),
+		"SwgUIPath":  "/static/swagger-ui",
+		"AssetPath":  "/static",
+		"UpdateTime": fInfo.ModTime().Format(time.RFC3339),
+	}
+	c.HTML(200, "swagger.tpl", data)
+}
+
 func startHTTPServer() {
 	host := fmt.Sprintf(":%v", config.Config.RestPort)
 
@@ -47,16 +63,24 @@ func startHTTPServer() {
 
 	opt := []grpc.DialOption{grpc.WithInsecure()}
 
-	err := v1.RegisterUserServiceHandlerFromEndpoint(context.Background(), gwmux, host, opt)
+	err := v1.RegisterUserServiceHandlerFromEndpoint(context.Background(), gwmux, ":9092", opt)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	router := gin.New()
-	router.RedirectTrailingSlash = false
+	//router.RedirectTrailingSlash = false
 	router.Use(guLogger.GinLogger(config.Config.Logger), gin.Recovery())
 
-	router.GET("/*any", func(c *gin.Context) {
+	//router.GET("/", func(c *gin.Context) {
+	//	c.Redirect(http.StatusFound, "/swagger-ui/")
+	//})
+
+	router.LoadHTMLFiles("static/views/swagger.tpl")
+	router.GET("/swagger-ui/", SwagDoc)
+	router.Static("/static", "./static")
+
+	router.GET("/api/*any", func(c *gin.Context) {
 		c.Request.Header.Set("tracing", "ing")
 	}, func(c *gin.Context) {
 		gwmux.ServeHTTP(c.Writer, c.Request)

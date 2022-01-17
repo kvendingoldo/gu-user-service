@@ -1,13 +1,9 @@
 package v1
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	appErrors "github.com/kvendingoldo/gu-common/pkg/errors"
 	appUtils "github.com/kvendingoldo/gu-common/pkg/utils"
-	"github.com/kvendingoldo/gu-user-service/config"
-	"github.com/kvendingoldo/gu-user-service/swagger_gen/api"
-
 	"github.com/kvendingoldo/gu-user-service/internal/models"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
@@ -30,7 +26,7 @@ import (
 
 func NewRouter(router *gin.Engine) {
 
-	api.SwaggerInfo.Host = fmt.Sprintf("127.0.0.1:%v", config.Config.RestPort)
+	//api.SwaggerInfo.Host = fmt.Sprintf("127.0.0.1:%v", config.Config.RestPort)
 
 	v1 := router.Group("/v1")
 	{

@@ -1,17 +1,31 @@
 syntax = "proto3";
-package api.v1;
-option go_package = "github.com/kvendingoldo/gu-user-service/gen/go/api/v1";
+//kvendingoldo.user_api.v1.UserService in req!!!
+package kvendingoldo.user_api.v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
+option go_package = "github.com/kvendingoldo/gu-user-service/pkg/api;user_api";
 
+// These annotations are used when generating the OpenAPI file.
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    version: "1.0";
+  };
+  external_docs: {
+    url: "https://github.com/kvendingoldo/gu-user-service";
+    description: "GU user service";
+  }
+  schemes: HTTP;
+};
 
 message User {
   int64 id = 1;
-  string name = 2;
-  double latitude = 3;
-  double longitude = 4;
+  string name = 2 [json_name = "name"];
+  double latitude = 3 [json_name = "latitude"];
+  double longitude = 4 [json_name = "longitude"];
   google.protobuf.Timestamp createdAt = 5;
   google.protobuf.Timestamp UpdatedAt = 6;
 }
@@ -51,9 +65,53 @@ message DeleteResponse {
 // TODO: should be bidirectional streaming RPC
 // example: https://github.com/pahanini/go-grpc-bidirectional-streaming-example
 service UserService{
-  rpc GetAll(google.protobuf.Empty) returns(GetAllResponse);
-  rpc GetByID(GetByIDRequest) returns(GetByIDResponse);
-  rpc New(NewRequest) returns(NewResponse);
-  rpc Update(UpdateRequest) returns (UpdateResponse);
-  rpc Delete(DeleteRequest) returns (DeleteResponse);
+  rpc GetAll(google.protobuf.Empty) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get all users"
+      description: "Get all users on the system."
+      tags: "Users"
+    };
+  };
+
+  rpc GetByID(GetByIDRequest) returns(GetByIDResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get user"
+      description: "Get user by ID on the system"
+      tags: "Users"
+    };
+  };
+
+  rpc New(NewRequest) returns(NewResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Create new user"
+      description: "Create new user on the system"
+      tags: "Users"
+    };
+  };
+
+  rpc Update(UpdateRequest) returns (UpdateResponse) {
+//    option (google.api.http) = {
+//      put: "api/v1/users/{id}"
+//    };
+  };
+
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/users/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Delete user"
+      description: "Delete user on the system"
+      tags: "Users"
+    };
+  };
 }

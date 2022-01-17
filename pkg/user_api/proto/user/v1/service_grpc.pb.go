@@ -4,7 +4,7 @@
 // - protoc             v3.17.3
 // source: proto/user/v1/service.proto
 
-package v1
+package user_api
 
 import (
 	context "context"
@@ -40,7 +40,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 
 func (c *userServiceClient) GetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	out := new(GetAllResponse)
-	err := c.cc.Invoke(ctx, "/api.v1.UserService/GetAll", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kvendingoldo.user_api.v1.UserService/GetAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (c *userServiceClient) GetAll(ctx context.Context, in *emptypb.Empty, opts 
 
 func (c *userServiceClient) GetByID(ctx context.Context, in *GetByIDRequest, opts ...grpc.CallOption) (*GetByIDResponse, error) {
 	out := new(GetByIDResponse)
-	err := c.cc.Invoke(ctx, "/api.v1.UserService/GetByID", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kvendingoldo.user_api.v1.UserService/GetByID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (c *userServiceClient) GetByID(ctx context.Context, in *GetByIDRequest, opt
 
 func (c *userServiceClient) New(ctx context.Context, in *NewRequest, opts ...grpc.CallOption) (*NewResponse, error) {
 	out := new(NewResponse)
-	err := c.cc.Invoke(ctx, "/api.v1.UserService/New", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kvendingoldo.user_api.v1.UserService/New", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (c *userServiceClient) New(ctx context.Context, in *NewRequest, opts ...grp
 
 func (c *userServiceClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error) {
 	out := new(UpdateResponse)
-	err := c.cc.Invoke(ctx, "/api.v1.UserService/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kvendingoldo.user_api.v1.UserService/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (c *userServiceClient) Update(ctx context.Context, in *UpdateRequest, opts 
 
 func (c *userServiceClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
 	out := new(DeleteResponse)
-	err := c.cc.Invoke(ctx, "/api.v1.UserService/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kvendingoldo.user_api.v1.UserService/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func _UserService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.v1.UserService/GetAll",
+		FullMethod: "/kvendingoldo.user_api.v1.UserService/GetAll",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetAll(ctx, req.(*emptypb.Empty))
@@ -155,7 +155,7 @@ func _UserService_GetByID_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.v1.UserService/GetByID",
+		FullMethod: "/kvendingoldo.user_api.v1.UserService/GetByID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetByID(ctx, req.(*GetByIDRequest))
@@ -173,7 +173,7 @@ func _UserService_New_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.v1.UserService/New",
+		FullMethod: "/kvendingoldo.user_api.v1.UserService/New",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).New(ctx, req.(*NewRequest))
@@ -191,7 +191,7 @@ func _UserService_Update_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.v1.UserService/Update",
+		FullMethod: "/kvendingoldo.user_api.v1.UserService/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Update(ctx, req.(*UpdateRequest))
@@ -209,7 +209,7 @@ func _UserService_Delete_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.v1.UserService/Delete",
+		FullMethod: "/kvendingoldo.user_api.v1.UserService/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Delete(ctx, req.(*DeleteRequest))
@@ -221,7 +221,7 @@ func _UserService_Delete_Handler(srv interface{}, ctx context.Context, dec func(
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.v1.UserService",
+	ServiceName: "kvendingoldo.user_api.v1.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

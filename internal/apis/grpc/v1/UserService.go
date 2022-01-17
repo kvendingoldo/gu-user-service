@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	v1 "github.com/kvendingoldo/gu-user-service/gen/go/api/v1"
 	"github.com/kvendingoldo/gu-user-service/internal/models"
+	v1 "github.com/kvendingoldo/gu-user-service/pkg/user_api/proto/user/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -33,7 +33,7 @@ func (UserServiceServer) GetAll(ctx context.Context, req *emptypb.Empty) (*v1.Ge
 	return &v1.GetAllResponse{Users: response}, nil
 }
 
-func (UserServiceServer) GetByID(ctx context.Context, req *v1.GetByIdRequest) (*v1.GetByIdResponse, error) {
+func (UserServiceServer) GetByID(ctx context.Context, req *v1.GetByIDRequest) (*v1.GetByIDResponse, error) {
 	var user models.User
 
 	err := models.GetUserByID(&user, req.Id)
@@ -43,7 +43,7 @@ func (UserServiceServer) GetByID(ctx context.Context, req *v1.GetByIdRequest) (*
 	}
 	gRPCResult := user.GetGRPCModel()
 
-	return &v1.GetByIdResponse{User: &gRPCResult}, nil
+	return &v1.GetByIDResponse{User: &gRPCResult}, nil
 }
 
 func (UserServiceServer) New(ctx context.Context, req *v1.NewRequest) (*v1.NewResponse, error) {

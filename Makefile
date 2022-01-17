@@ -5,6 +5,14 @@ WARN_COLOR=\x1b[33;01m
 OK_STRING=$(OK_COLOR)[OK]$(NO_COLOR)
 ERROR_STRING=$(ERROR_COLOR)[ERRORS]$(NO_COLOR)
 WARN_STRING=$(WARN_COLOR)[WARNINGS]$(NO_COLOR)
+PROTOC_VERSION=3.17.3
+SWAGGERUI_VERSION = 3.22.3
+
+TOOLCHAIN_DIR=./tools
+REPOSITORY_ROOT=./
+
+
+.PHONY: swagger-ui
 
 ##@ General
 help: ## Display this help.
@@ -17,16 +25,10 @@ vet: ## Run go vet against code.
 	go vet ./...
 
 ##@ Generate
-gen_grpc: ## Generate gRPC client/server code
-	mkdir -p ./gen/go
-	protoc -I . --go_out ./gen/go/ --go_opt paths=source_relative --go-grpc_out ./gen/go/ --go-grpc_opt paths=source_relative ./api/v1/service.proto
 
-gen_grpc_gw: ## Generate gRPC gateway code
-	mkdir -p ./gen/go
-	protoc -I . --grpc-gateway_out ./gen/go --grpc-gateway_opt logtostderr=true --grpc-gateway_opt paths=source_relative --grpc-gateway_opt generate_unbound_methods=true ./api/v1/service.proto
-
-gen: gen_grpc gen_grpc_gw
-	@echo "Generate code $(OK_STRING)"
+gen: ## Generate API
+	buf generate
+	@echo "Generate API $(OK_STRING)"
 
 ##@ Build
 build: gen fmt vet  ## Build service binary.
@@ -38,6 +40,7 @@ run: gen fmt vet ## Run service from your laptop.
 ##@ Test
 lint: ## Run Go linter
 	~/go/bin/golangci-lint run ./...
+	buf lint
 
 test: ## Run Go tests
 	go test ./...
@@ -56,5 +59,18 @@ install-deps:
 		github.com/bufbuild/buf/cmd/protoc-gen-buf-lint
 	@echo "Install dependencies $(OK_STRING)"
 
+install-proto-deps:
+	mkdir -p proto/google/api
+	@curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/annotations.proto > proto/google/api/annotations.proto
+	@curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/http.proto > proto/google/api/http.proto
 
-# go mod !!!
+gen-swagger: static/swagger-ui gen
+
+
+static/swagger-ui:
+	mkdir -p /tmp/swaggerui-temp/ || echo ""
+	curl -o /tmp/swaggerui-temp/swaggerui.zip -L \
+		https://github.com/swagger-api/swagger-ui/archive/v$(SWAGGERUI_VERSION).zip
+	(cd /tmp/swaggerui-temp/; unzip -q -o swaggerui.zip)
+	cp -r /tmp/swaggerui-temp/swagger-ui-$(SWAGGERUI_VERSION)/dist/ ./static/swagger-ui/
+	rm -rf /tmp/swaggerui-temp
