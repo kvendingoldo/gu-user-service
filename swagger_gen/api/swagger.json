@@ -1,4 +1,13 @@
 {
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "schemes": [
+        "http"
+    ],
     "swagger": "2.0",
     "info": {
         "description": "Documentation's GU user service",
@@ -9,13 +18,8 @@
             "url": "http://github.com/kvendingoldo",
             "email": "kvendingoldo@gmail.com"
         },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
         "version": "1.0"
     },
-    "host": "localhost:8080",
     "basePath": "/v1",
     "paths": {
         "/users": {
@@ -31,20 +35,20 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.User"
+                                "$ref": "#/definitions/models.User"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/users.MessageResponse"
+                            "$ref": "#/definitions/v1.MessageResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/users.MessageResponse"
+                            "$ref": "#/definitions/v1.MessageResponse"
                         }
                     }
                 }
@@ -68,7 +72,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.NewUserRequest"
+                            "$ref": "#/definitions/v1.NewUserRequest"
                         }
                     }
                 ],
@@ -76,19 +80,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.User"
+                            "$ref": "#/definitions/models.User"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/users.MessageResponse"
+                            "$ref": "#/definitions/v1.MessageResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/users.MessageResponse"
+                            "$ref": "#/definitions/v1.MessageResponse"
                         }
                     }
                 }
@@ -114,19 +118,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.User"
+                            "$ref": "#/definitions/models.User"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/users.MessageResponse"
+                            "$ref": "#/definitions/v1.MessageResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/users.MessageResponse"
+                            "$ref": "#/definitions/v1.MessageResponse"
                         }
                     }
                 }
@@ -151,7 +155,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.User"
+                            "$ref": "#/definitions/models.User"
                         }
                     }
                 ],
@@ -191,13 +195,9 @@
         }
     },
     "definitions": {
-        "model.User": {
+        "models.User": {
             "type": "object",
             "properties": {
-                "coordinates": {
-                    "type": "string",
-                    "example": "39.12355, 27.64538"
-                },
                 "created_at": {
                     "type": "string",
                     "example": "2021-02-24 20:19:39"
@@ -205,6 +205,14 @@
                 "id": {
                     "type": "integer",
                     "example": 23
+                },
+                "lat": {
+                    "type": "number",
+                    "example": 39.12355
+                },
+                "lon": {
+                    "type": "number",
+                    "example": 27.64538
                 },
                 "name": {
                     "type": "string",
@@ -216,7 +224,7 @@
                 }
             }
         },
-        "users.MessageResponse": {
+        "v1.MessageResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -224,16 +232,19 @@
                 }
             }
         },
-        "users.NewUserRequest": {
+        "v1.NewUserRequest": {
             "type": "object",
             "required": [
-                "coordinates",
                 "name"
             ],
             "properties": {
-                "coordinates": {
-                    "type": "string",
-                    "example": "39.12355, 27.64538"
+                "lat": {
+                    "type": "number",
+                    "example": 39.12355
+                },
+                "lon": {
+                    "type": "number",
+                    "example": 27.64538
                 },
                 "name": {
                     "type": "string",

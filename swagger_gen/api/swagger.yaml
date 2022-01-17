@@ -1,16 +1,21 @@
 basePath: /v1
+consumes:
+- application/json
 definitions:
-  model.User:
+  models.User:
     properties:
-      coordinates:
-        example: 39.12355, 27.64538
-        type: string
       created_at:
         example: "2021-02-24 20:19:39"
         type: string
       id:
         example: 23
         type: integer
+      lat:
+        example: 39.12355
+        type: number
+      lon:
+        example: 27.64538
+        type: number
       name:
         example: Steven
         type: string
@@ -18,33 +23,31 @@ definitions:
         example: "2021-02-24 20:19:39"
         type: string
     type: object
-  users.MessageResponse:
+  v1.MessageResponse:
     properties:
       message:
         type: string
     type: object
-  users.NewUserRequest:
+  v1.NewUserRequest:
     properties:
-      coordinates:
-        example: 39.12355, 27.64538
-        type: string
+      lat:
+        example: 39.12355
+        type: number
+      lon:
+        example: 27.64538
+        type: number
       name:
         example: Bill
         type: string
     required:
-    - coordinates
     - name
     type: object
-host: localhost:8080
 info:
   contact:
     email: kvendingoldo@gmail.com
     name: Alexander Sharov
     url: http://github.com/kvendingoldo
   description: Documentation's GU user service
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: GU user service
   version: "1.0"
@@ -57,16 +60,16 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.User'
+              $ref: '#/definitions/models.User'
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/users.MessageResponse'
+            $ref: '#/definitions/v1.MessageResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/users.MessageResponse'
+            $ref: '#/definitions/v1.MessageResponse'
       summary: Get all users
       tags:
       - user
@@ -80,22 +83,22 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/users.NewUserRequest'
+          $ref: '#/definitions/v1.NewUserRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.User'
+            $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/users.MessageResponse'
+            $ref: '#/definitions/v1.MessageResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/users.MessageResponse'
+            $ref: '#/definitions/v1.MessageResponse'
       summary: Create new user
       tags:
       - user
@@ -128,15 +131,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.User'
+            $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/users.MessageResponse'
+            $ref: '#/definitions/v1.MessageResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/users.MessageResponse'
+            $ref: '#/definitions/v1.MessageResponse'
       summary: Get users by ID
       tags:
       - user
@@ -153,7 +156,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/model.User'
+          $ref: '#/definitions/models.User'
       responses:
         "200":
           description: ok
@@ -162,4 +165,8 @@ paths:
       summary: Update user
       tags:
       - user
+produces:
+- application/json
+schemes:
+- http
 swagger: "2.0"

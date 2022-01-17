@@ -1,3 +1,6 @@
+basePath: /v1
+consumes:
+- application/json
 definitions:
   models.User:
     properties:
@@ -40,7 +43,14 @@ definitions:
     - name
     type: object
 info:
-  contact: {}
+  contact:
+    email: kvendingoldo@gmail.com
+    name: Alexander Sharov
+    url: http://github.com/kvendingoldo
+  description: Documentation's GU user service
+  termsOfService: http://swagger.io/terms/
+  title: GU user service
+  version: "1.0"
 paths:
   /users:
     get:
@@ -155,4 +165,8 @@ paths:
       summary: Update user
       tags:
       - user
+produces:
+- application/json
+schemes:
+- http
 swagger: "2.0"
