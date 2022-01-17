@@ -7,7 +7,7 @@ import (
 	appErrors "github.com/kvendingoldo/gu-common/pkg/errors"
 	"github.com/kvendingoldo/gu-user-service/config"
 
-	v1 "github.com/kvendingoldo/gu-user-service/pkg/user_api/proto/user/v1"
+	v1 "github.com/kvendingoldo/gu-user-service/pkg/api/kvendingoldo/user_api/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 	"time"
@@ -28,8 +28,8 @@ func (u *User) TableName() string {
 	return "users"
 }
 
-func (u *User) GetGRPCModel() v1.User {
-	return v1.User{
+func (u *User) GetGRPCModel() *v1.User {
+	return &v1.User{
 		Id:        u.ID,
 		CreatedAt: timestamppb.New(u.CreatedAt),
 		UpdatedAt: timestamppb.New(u.UpdatedAt),

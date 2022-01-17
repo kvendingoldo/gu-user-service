@@ -9,7 +9,7 @@ import (
 	"github.com/kvendingoldo/gu-user-service/config"
 	v1Grpc "github.com/kvendingoldo/gu-user-service/internal/apis/grpc/v1"
 	"github.com/kvendingoldo/gu-user-service/internal/models"
-	v1 "github.com/kvendingoldo/gu-user-service/pkg/user_api/proto/user/v1"
+	v1 "github.com/kvendingoldo/gu-user-service/pkg/api/kvendingoldo/user_api/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"

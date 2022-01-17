@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.17.3
-// source: proto/user/v1/service.proto
+// source: api/kvendingoldo/user_api/v1/service.proto
 
 package user_api
 
@@ -25,7 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	GetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllResponse, error)
 	GetByID(ctx context.Context, in *GetByIDRequest, opts ...grpc.CallOption) (*GetByIDResponse, error)
-	New(ctx context.Context, in *NewRequest, opts ...grpc.CallOption) (*NewResponse, error)
+	Create(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 }
@@ -56,9 +56,9 @@ func (c *userServiceClient) GetByID(ctx context.Context, in *GetByIDRequest, opt
 	return out, nil
 }
 
-func (c *userServiceClient) New(ctx context.Context, in *NewRequest, opts ...grpc.CallOption) (*NewResponse, error) {
-	out := new(NewResponse)
-	err := c.cc.Invoke(ctx, "/kvendingoldo.user_api.v1.UserService/New", in, out, opts...)
+func (c *userServiceClient) Create(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+	out := new(CreateResponse)
+	err := c.cc.Invoke(ctx, "/kvendingoldo.user_api.v1.UserService/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (c *userServiceClient) Delete(ctx context.Context, in *DeleteRequest, opts 
 type UserServiceServer interface {
 	GetAll(context.Context, *emptypb.Empty) (*GetAllResponse, error)
 	GetByID(context.Context, *GetByIDRequest) (*GetByIDResponse, error)
-	New(context.Context, *NewRequest) (*NewResponse, error)
+	Create(context.Context, *CreateUserRequest) (*CreateResponse, error)
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -105,8 +105,8 @@ func (UnimplementedUserServiceServer) GetAll(context.Context, *emptypb.Empty) (*
 func (UnimplementedUserServiceServer) GetByID(context.Context, *GetByIDRequest) (*GetByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByID not implemented")
 }
-func (UnimplementedUserServiceServer) New(context.Context, *NewRequest) (*NewResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method New not implemented")
+func (UnimplementedUserServiceServer) Create(context.Context, *CreateUserRequest) (*CreateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedUserServiceServer) Update(context.Context, *UpdateRequest) (*UpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
@@ -163,20 +163,20 @@ func _UserService_GetByID_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_New_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewRequest)
+func _UserService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).New(ctx, in)
+		return srv.(UserServiceServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kvendingoldo.user_api.v1.UserService/New",
+		FullMethod: "/kvendingoldo.user_api.v1.UserService/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).New(ctx, req.(*NewRequest))
+		return srv.(UserServiceServer).Create(ctx, req.(*CreateUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -233,8 +233,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_GetByID_Handler,
 		},
 		{
-			MethodName: "New",
-			Handler:    _UserService_New_Handler,
+			MethodName: "Create",
+			Handler:    _UserService_Create_Handler,
 		},
 		{
 			MethodName: "Update",
@@ -246,5 +246,5 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/user/v1/service.proto",
+	Metadata: "api/kvendingoldo/user_api/v1/service.proto",
 }

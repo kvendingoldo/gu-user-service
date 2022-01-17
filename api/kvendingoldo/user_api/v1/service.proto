@@ -1,0 +1,227 @@
+syntax = "proto3";
+package kvendingoldo.user_api.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/kvendingoldo/gu-user-service/pkg/api;user_api";
+
+// NOTE: These annotations are used when generating the OpenAPI file.
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "GU User service";
+    version: "1.0";
+    description: "Documentation's GU user service";
+    contact: {
+      name: "Alexander Sharov";
+      url: "http://github.com/kvendingoldo";
+      email: "kvendingoldo@yandex.ru";
+    };
+  };
+  external_docs: {
+    url: "https://github.com/kvendingoldo/gu-user-service";
+  }
+  schemes: HTTP;
+  consumes: "application/json";
+  produces: "application/json";
+
+  responses: {
+    key: "403";
+    value: {
+      description: "Returned when the user does not have permission to access the resource.";
+    }
+  }
+  responses: {
+    key: "404";
+    value: {
+      description: "Returned when the resource does not exist.";
+      schema: {
+        json_schema: {
+          type: STRING;
+        }
+      }
+    }
+  }
+  responses: {
+    key: "500";
+    value: {
+      description: "Server error";
+      headers: {
+        key: "X-Correlation-Id"
+        value: {
+          description: "Unique event identifier for server requests"
+          type: "string"
+          format: "uuid"
+          default: "\"2438ac3c-37eb-4902-adef-ed16b4431030\""
+          pattern: "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$"
+        }
+      };
+      schema: {
+        json_schema: {
+          ref: ".grpc.gateway.examples.internal.proto.examplepb.ErrorResponse";
+        }
+      }
+    }
+  }
+
+};
+
+message ErrorResponse{
+  string correlationId = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    pattern: "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$",
+    title: "x-correlation-id",
+    description: "Unique event identifier for server requests",
+    format: "uuid",
+    example: "\"2438ac3c-37eb-4902-adef-ed16b4431030\""
+  }];
+  ErrorObject error = 2;
+}
+
+message ErrorObject{
+  int32 code = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    pattern: "^[0-9]$",
+    title: "code",
+    description: "Response code",
+    format: "integer"
+  }];
+  string message = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    pattern: "^[a-zA-Z0-9]{1, 32}$",
+    title: "message",
+    description: "Response message"
+  }];
+}
+
+// A standard Create message from AIP-133 with a user-specified ID.
+// The user-specified ID (the `book_id` field in this example) must become a
+// query parameter in the OpenAPI spec.
+//
+// See: https://google.aip.dev/133#user-specified-ids
+message User {
+  // The resource name of the book.
+  //
+  // Format: `publishers/{publisher}/books/{book}`
+  //
+  // Example: `publishers/1257894000000000000/books/my-book`
+  int64 id = 1 [json_name = "id"];
+  string name = 2 [json_name = "name"];
+  double latitude = 3 [json_name = "latitude"];
+  double longitude = 4 [json_name = "longitude"];
+  google.protobuf.Timestamp created_at = 5 [json_name = "created_at"];
+  google.protobuf.Timestamp updated_at = 6 [json_name = "updated_at"];
+}
+
+message GetAllResponse {
+  repeated User users = 1;
+}
+
+message GetByIDRequest {
+  int64 id = 1;
+}
+message GetByIDResponse {
+  User user = 1;
+}
+
+// A standard New message with a user-specified ID.
+// The user-specified ID (the `book_id` field in this example) must become a
+// query parameter in the OpenAPI spec.
+message CreateUserRequest {
+  // The user to create.
+  User user = 1;
+}
+//TODO: probably the whole user instead of id will be better
+message CreateResponse {
+  int64 id = 1;
+}
+
+// A standard Update message
+message UpdateRequest {
+  // The user to update.
+  //
+  // The user's `name` field is used to identify the user to be updated.
+  User user = 1 [(google.api.field_behavior) = REQUIRED];
+}
+//TODO: probably the whole user instead of id will be better
+message UpdateResponse {
+  int64 id = 1;
+}
+
+message DeleteRequest {
+  int64 id = 1;
+}
+message DeleteResponse {
+  int64 id = 1;
+}
+
+// TODO: should be bidirectional streaming RPC
+// example: https://github.com/pahanini/go-grpc-bidirectional-streaming-example
+service UserService{
+
+  rpc GetAll(google.protobuf.Empty) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get all users"
+      description: "Get all users on the system."
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      }
+      tags: "Users"
+    };
+  };
+
+  rpc GetByID(GetByIDRequest) returns(GetByIDResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get user"
+      description: "Get user by ID on the system"
+      tags: "Users"
+    };
+  };
+
+
+  rpc Create(CreateUserRequest) returns(CreateResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users"
+      body: "user"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Create new user"
+      description: "Create new user on the system"
+      tags: "Users"
+    };
+  };
+
+  rpc Update(UpdateRequest) returns (UpdateResponse) {
+    // TODO
+    //    option (google.api.http) = {
+    //      post: "/api/v1/users/{id}"
+    //    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Update user"
+      description: "Update user by ID on the system"
+      tags: "Users"
+      consumes: "application/json";
+      produces: "application/json";
+    };
+  };
+
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/users/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Delete user"
+      description: "Delete user on the system"
+      tags: "Users"
+    };
+  };
+}

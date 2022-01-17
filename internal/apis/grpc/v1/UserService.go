@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kvendingoldo/gu-user-service/internal/models"
-	v1 "github.com/kvendingoldo/gu-user-service/pkg/user_api/proto/user/v1"
+	v1 "github.com/kvendingoldo/gu-user-service/pkg/api/kvendingoldo/user_api/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -26,8 +26,7 @@ func (UserServiceServer) GetAll(ctx context.Context, req *emptypb.Empty) (*v1.Ge
 
 	var response []*v1.User
 	for _, user := range users {
-		fmt.Println(user)
-		//response = append(response, user.GetGRPCModel())
+		response = append(response, user.GetGRPCModel())
 	}
 
 	return &v1.GetAllResponse{Users: response}, nil
@@ -43,10 +42,10 @@ func (UserServiceServer) GetByID(ctx context.Context, req *v1.GetByIDRequest) (*
 	}
 	gRPCResult := user.GetGRPCModel()
 
-	return &v1.GetByIDResponse{User: &gRPCResult}, nil
+	return &v1.GetByIDResponse{User: gRPCResult}, nil
 }
 
-func (UserServiceServer) New(ctx context.Context, req *v1.NewRequest) (*v1.NewResponse, error) {
+func (UserServiceServer) New(ctx context.Context, req *v1.CreateUserRequest) (*v1.CreateResponse, error) {
 	user := models.User{
 		Name:      req.User.Name,
 		Latitude:  req.User.Latitude,
@@ -58,7 +57,7 @@ func (UserServiceServer) New(ctx context.Context, req *v1.NewRequest) (*v1.NewRe
 		return nil, status.Errorf(codes.Aborted, err.Error())
 	}
 
-	return &v1.NewResponse{Id: user.ID}, nil
+	return &v1.CreateResponse{Id: user.ID}, nil
 }
 
 func (UserServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (*v1.UpdateResponse, error) {
