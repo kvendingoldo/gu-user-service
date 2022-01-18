@@ -29,12 +29,12 @@
       "get": {
         "summary": "Get all users",
         "description": "Get all users on the system.",
-        "operationId": "UserService_GetAll",
+        "operationId": "UserService_List",
         "responses": {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/v1GetAllResponse"
+              "$ref": "#/definitions/v1ListUsersResponse"
             }
           },
           "403": {
@@ -61,6 +61,30 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "parent",
+            "description": "The parent resource name, for example, \"shelves/shelf1\".",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of items to return.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "The next_page_token value returned from a previous List request, if any.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "tags": [
           "Users"
         ]
@@ -73,7 +97,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1CreateResponse"
+              "$ref": "#/definitions/v1User"
             }
           },
           "403": {
@@ -103,7 +127,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "The user to create.",
+            "description": "The user resource which creates the resource on the server.",
             "in": "body",
             "required": true,
             "schema": {
@@ -116,16 +140,16 @@
         ]
       }
     },
-    "/api/v1/users/{id}": {
+    "/api/v1/users/{name}": {
       "get": {
         "summary": "Get user",
         "description": "Get user by ID on the system",
-        "operationId": "UserService_GetByID",
+        "operationId": "UserService_Get",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1GetByIDResponse"
+              "$ref": "#/definitions/v1User"
             }
           },
           "403": {
@@ -154,11 +178,11 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "name",
+            "description": "The field will contain name of the resource requested",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "string"
           }
         ],
         "tags": [
@@ -173,7 +197,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1DeleteResponse"
+              "properties": {}
             }
           },
           "403": {
@@ -202,15 +226,82 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "name",
+            "description": "The resource name of the user to be deleted",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "int64"
+            "type": "string"
           }
         ],
         "tags": [
           "Users"
+        ]
+      }
+    },
+    "/api/v1/users/{user.name}": {
+      "patch": {
+        "summary": "Update user",
+        "description": "Update user by ID on the system",
+        "operationId": "UserService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1User"
+            }
+          },
+          "403": {
+            "description": "Returned when the user does not have permission to access the resource.",
+            "schema": {}
+          },
+          "404": {
+            "description": "Returned when the resource does not exist.",
+            "schema": {
+              "type": "string",
+              "format": "string"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": ".grpc.gateway.examples.internal.proto.examplepb.ErrorResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "description": "The user resource which replaces the resource on the server.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1User"
+            }
+          },
+          {
+            "name": "updateMask",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "produces": [
+          "application/json"
         ]
       }
     }
@@ -243,26 +334,7 @@
         }
       }
     },
-    "v1CreateResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      },
-      "title": "TODO: probably the whole user instead of id will be better"
-    },
-    "v1DeleteResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "v1GetAllResponse": {
+    "v1ListUsersResponse": {
       "type": "object",
       "properties": {
         "users": {
@@ -270,35 +342,16 @@
           "items": {
             "$ref": "#/definitions/v1User"
           }
-        }
-      }
-    },
-    "v1GetByIDResponse": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/v1User"
-        }
-      }
-    },
-    "v1UpdateResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
+        },
+        "nextPageToken": {
           "type": "string",
-          "format": "int64"
+          "description": "Token to retrieve the next page of results, or empty if there are no\nmore results in the list."
         }
-      },
-      "title": "TODO: probably the whole user instead of id will be better"
+      }
     },
     "v1User": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64",
-          "description": "The resource name of the book.\n\nFormat: `publishers/{publisher}/books/{book}`\n\nExample: `publishers/1257894000000000000/books/my-book`"
-        },
         "name": {
           "type": "string"
         },

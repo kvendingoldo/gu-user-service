@@ -7,9 +7,9 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	guLogger "github.com/kvendingoldo/gu-common/pkg/logger"
 	"github.com/kvendingoldo/gu-user-service/config"
-	v1Grpc "github.com/kvendingoldo/gu-user-service/internal/apis/grpc/v1"
+	v1Grpc "github.com/kvendingoldo/gu-user-service/internal/apis/v1"
 	"github.com/kvendingoldo/gu-user-service/internal/models"
-	v1 "github.com/kvendingoldo/gu-user-service/pkg/api/kvendingoldo/user_api/v1"
+	v1 "github.com/kvendingoldo/gu-user-service/pkg/api/kvendingoldo/user/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
@@ -80,8 +80,8 @@ func startHTTPServer() {
 	router.GET("/swagger-ui/", SwagDoc)
 	router.Static("/static", "./static")
 
-	router.GET("/api/*any", func(c *gin.Context) {
-		c.Request.Header.Set("tracing", "ing")
+	router.Any("/api/*any", func(c *gin.Context) {
+
 	}, func(c *gin.Context) {
 		gwmux.ServeHTTP(c.Writer, c.Request)
 	})

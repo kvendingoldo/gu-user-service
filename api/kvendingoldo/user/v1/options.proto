@@ -1,0 +1,64 @@
+syntax = "proto3";
+package kvendingoldo.user.v1;
+option go_package = "api/kvendingoldo/user/v1;user_api";
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// NOTE: These annotations are used when generating the OpenAPI file.
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "GU User service";
+    version: "1.0";
+    description: "Documentation's GU user service";
+    contact: {
+      name: "Alexander Sharov";
+      url: "http://github.com/kvendingoldo";
+      email: "kvendingoldo@yandex.ru";
+    };
+  };
+  external_docs: {
+    url: "https://github.com/kvendingoldo/gu-user-service";
+  }
+  schemes: HTTP;
+  consumes: "application/json";
+  produces: "application/json";
+
+  responses: {
+    key: "403";
+    value: {
+      description: "Returned when the user does not have permission to access the resource.";
+    }
+  }
+  responses: {
+    key: "404";
+    value: {
+      description: "Returned when the resource does not exist.";
+      schema: {
+        json_schema: {
+          type: STRING;
+        }
+      }
+    }
+  }
+  responses: {
+    key: "500";
+    value: {
+      description: "Server error";
+      headers: {
+        key: "X-Correlation-Id"
+        value: {
+          description: "Unique event identifier for server requests"
+          type: "string"
+          format: "uuid"
+          default: "\"2438ac3c-37eb-4902-adef-ed16b4431030\""
+          pattern: "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$"
+        }
+      };
+      schema: {
+        json_schema: {
+          ref: ".grpc.gateway.examples.internal.proto.examplepb.ErrorResponse";
+        }
+      }
+    }
+  }
+};
