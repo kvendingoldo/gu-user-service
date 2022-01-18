@@ -1,0 +1,90 @@
+syntax = "proto3";
+package api.kvendingoldo.user.v1;
+option go_package = "api/kvendingoldo/user/v1;user_api";
+
+import "google/protobuf/empty.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/api/annotations.proto";
+
+import "api/kvendingoldo/user/v1/messages.proto";
+
+service UserService{
+
+  // Creates an user in the system.
+  rpc Create(CreateUserRequest) returns(User) {
+    // Create maps to HTTP POST. URL path as the collection name.
+    // HTTP request body contains the resource.
+    option (google.api.http) = {
+      post: "/api/v1/users"
+      body: "user"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Create new user"
+      description: "Create new user on the system"
+      tags: "Users"
+    };
+  };
+
+  // Gets user from the system.
+  rpc Get(GetUserRequest) returns(User) {
+    // Get maps to HTTP GET. Resource name is mapped to the URL. No body.
+    option (google.api.http) = {
+      get: "/api/v1/users/{name}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get user"
+      description: "Get user by ID on the system"
+      tags: "Users"
+    };
+  };
+
+  // Updates an user in the system.
+  rpc Update(UpdateUserRequest) returns (User) {
+    // Update maps to HTTP PATCH. Resource name is mapped to a URL path.
+    // Resource is contained in the HTTP request body.
+    option (google.api.http) = {
+      patch: "/api/v1/users/{user.name}"
+      body: "user"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Update user"
+      description: "Update user by ID on the system"
+      tags: "Users"
+      consumes: "application/json";
+      produces: "application/json";
+    };
+  };
+
+  // Deletes an user in the system.
+  rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty) {
+    // Delete maps to HTTP DELETE. Resource name maps to the URL path.
+    // There is no request body.
+    option (google.api.http) = {
+      delete: "/api/v1/users/{name}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Delete user"
+      description: "Delete user on the system"
+      tags: "Users"
+    };
+  };
+
+  // Lists users in the system.
+  rpc List(ListUsersRequest) returns(ListUsersResponse) {
+    // List method maps to HTTP GET.
+    option (google.api.http) = {
+      get: "/api/v1/users"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get all users"
+      description: "Get all users on the system."
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      }
+      tags: "Users"
+    };
+  };
+}

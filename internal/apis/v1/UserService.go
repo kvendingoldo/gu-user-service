@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kvendingoldo/gu-user-service/internal/models"
-	v1 "github.com/kvendingoldo/gu-user-service/proto_gen/api"
+	v1 "github.com/kvendingoldo/gu-user-service/pkg/api/kvendingoldo/user/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -15,53 +15,36 @@ type UserServiceServer struct {
 	v1.UserServiceServer
 }
 
-func (UserServiceServer) GetAll(ctx context.Context, req *emptypb.Empty) (*v1.GetAllResponse, error) {
-	var users []models.User
-
-	err := models.GetAllUsers(&users)
-	if err != nil {
-		fmt.Println(err)
-		// TODO
-	}
-
-	var response []*v1.User
-	for _, user := range users {
-		fmt.Println(user)
-		//response = append(response, user.GetGRPCModel())
-	}
-
-	return &v1.GetAllResponse{Users: response}, nil
-}
-
-func (UserServiceServer) GetByID(ctx context.Context, req *v1.GetByIdRequest) (*v1.GetByIdResponse, error) {
-	var user models.User
-
-	err := models.GetUserByID(&user, req.Id)
-	if err != nil {
-
-		return nil, err
-	}
-	gRPCResult := user.GetGRPCModel()
-
-	return &v1.GetByIdResponse{User: &gRPCResult}, nil
-}
-
-func (UserServiceServer) New(ctx context.Context, req *v1.NewRequest) (*v1.NewResponse, error) {
+func (UserServiceServer) Create(ctx context.Context, req *v1.CreateUserRequest) (*v1.User, error) {
 	user := models.User{
 		Name:      req.User.Name,
 		Latitude:  req.User.Latitude,
 		Longitude: req.User.Longitude,
 	}
 
+	fmt.Println("kek")
+
 	err := models.CreateUser(&user)
 	if err != nil {
 		return nil, status.Errorf(codes.Aborted, err.Error())
 	}
 
-	return &v1.NewResponse{Id: user.ID}, nil
+	return user.GetGRPCModel(), nil
 }
 
-func (UserServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (*v1.UpdateResponse, error) {
+func (UserServiceServer) Get(ctx context.Context, req *v1.GetUserRequest) (*v1.User, error) {
+	var user models.User
+
+	err := models.GetUser(&user, req.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return user.GetGRPCModel(), nil
+}
+
+func (UserServiceServer) Update(ctx context.Context, req *v1.UpdateUserRequest) (*v1.User, error) {
+	var user models.User
 	//user := models.User{
 	//	ID:        req.User.Id,
 	//	Name:      req.User.Name,
@@ -127,15 +110,31 @@ func (UserServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (*v1
 	//	// TODO
 	//}
 
-	return &v1.UpdateResponse{Id: 0}, nil
+	return user.GetGRPCModel(), nil
 }
 
-func (UserServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (*v1.DeleteResponse, error) {
-	uid := req.Id
+func (UserServiceServer) Delete(ctx context.Context, req *v1.DeleteUserRequest) (*emptypb.Empty, error) {
+	uid := req.Name
 	err := models.DeleteUser(uid)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return &emptypb.Empty{}, status.Errorf(codes.Internal, err.Error())
+	}
+	return &emptypb.Empty{}, nil
+}
+
+func (UserServiceServer) List(ctx context.Context, req *v1.ListUsersRequest) (*v1.ListUsersResponse, error) {
+	var users []models.User
+
+	err := models.ListUsers(&users)
+	if err != nil {
+		fmt.Println(err)
+		// TODO
 	}
 
-	return &v1.DeleteResponse{Id: uid}, nil
+	var response []*v1.User
+	for _, user := range users {
+		response = append(response, user.GetGRPCModel())
+	}
+
+	return &v1.ListUsersResponse{Users: response}, nil
 }

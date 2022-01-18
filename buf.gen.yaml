@@ -1,0 +1,26 @@
+version: v1
+plugins:
+  - name: go
+    out: pkg
+    opt:
+      - paths=import
+    strategy: directory
+
+  - name: go-grpc
+    out: pkg
+    opt:
+      - paths=import
+    strategy: directory
+
+  - name: grpc-gateway
+    out: pkg
+    opt:
+      - paths=import
+      - generate_unbound_methods=true
+    strategy: directory
+
+  - name: openapiv2
+    opt:
+      - allow_merge=true
+      - merge_file_name=api
+    out: ./static/

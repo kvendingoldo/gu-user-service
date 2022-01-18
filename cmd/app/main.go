@@ -1,18 +1,23 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	guLogger "github.com/kvendingoldo/gu-common/pkg/logger"
 	"github.com/kvendingoldo/gu-user-service/config"
-	v1Grpc "github.com/kvendingoldo/gu-user-service/internal/apis/grpc/v1"
-	v1Rest "github.com/kvendingoldo/gu-user-service/internal/apis/rest/v1"
+	v1Grpc "github.com/kvendingoldo/gu-user-service/internal/apis/v1"
 	"github.com/kvendingoldo/gu-user-service/internal/models"
-	v1 "github.com/kvendingoldo/gu-user-service/proto_gen/api"
+	v1 "github.com/kvendingoldo/gu-user-service/pkg/api/kvendingoldo/user/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"net/http"
+	"os"
+	"time"
 )
 
 func startGRPCServer() {
@@ -33,13 +38,55 @@ func startGRPCServer() {
 	}()
 }
 
+func SwagDoc(c *gin.Context) {
+	schemaPath := "static/api.swagger.json"
+	fInfo, _ := os.Stat(schemaPath)
+	data := map[string]string{
+		"EnvName":    "ab",
+		"AppName":    "cd",
+		"JsonFile":   fmt.Sprintf("/%s", schemaPath),
+		"SwgUIPath":  "/static/swagger-ui",
+		"AssetPath":  "/static",
+		"UpdateTime": fInfo.ModTime().Format(time.RFC3339),
+	}
+	c.HTML(200, "swagger.tpl", data)
+}
+
 func startHTTPServer() {
+	host := fmt.Sprintf(":%v", config.Config.RestPort)
+
+	gwmux := runtime.NewServeMux(
+		runtime.WithMetadata(func(ctx context.Context, request *http.Request) metadata.MD {
+			return metadata.Pairs("tracing", request.Header.Get("tracing"))
+		}),
+	)
+
+	opt := []grpc.DialOption{grpc.WithInsecure()}
+
+	err := v1.RegisterUserServiceHandlerFromEndpoint(context.Background(), gwmux, ":9092", opt)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	router := gin.New()
+	//router.RedirectTrailingSlash = false
 	router.Use(guLogger.GinLogger(config.Config.Logger), gin.Recovery())
 
-	v1Rest.NewRouter(router)
+	//router.GET("/", func(c *gin.Context) {
+	//	c.Redirect(http.StatusFound, "/swagger-ui/")
+	//})
 
-	if err := router.Run(fmt.Sprintf(":%v", config.Config.RestPort)); err != nil {
+	router.LoadHTMLFiles("static/views/swagger.tpl")
+	router.GET("/swagger-ui/", SwagDoc)
+	router.Static("/static", "./static")
+
+	router.Any("/api/*any", func(c *gin.Context) {
+
+	}, func(c *gin.Context) {
+		gwmux.ServeHTTP(c.Writer, c.Request)
+	})
+
+	if err := router.Run(host); err != nil {
 		log.Fatalf("could not start http server: %v", err)
 	}
 }

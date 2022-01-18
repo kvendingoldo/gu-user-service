@@ -1,0 +1,19 @@
+version: v1
+
+lint:
+  service_suffix: Service
+  allow_comment_ignores: true
+  rpc_allow_google_protobuf_empty_requests: true
+  rpc_allow_google_protobuf_empty_responses: true
+  use:
+    - DEFAULT
+  except:
+    - PACKAGE_DIRECTORY_MATCH
+
+breaking:
+  use:
+    - FILE
+
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway

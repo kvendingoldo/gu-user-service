@@ -1,5 +1,5 @@
 ports:
-  rest: 8082
+  rest: 8084
   grpc: 9092
 
 server:

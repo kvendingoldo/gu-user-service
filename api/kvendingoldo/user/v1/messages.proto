@@ -1,0 +1,65 @@
+syntax = "proto3";
+package api.kvendingoldo.user.v1;
+option go_package = "api/kvendingoldo/user/v1;user_api";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+
+// A standard Create message from AIP-133 with a user-specified ID.
+// The user-specified ID (the `book_id` field in this example) must become a
+// query parameter in the OpenAPI spec.
+//
+// See: https://google.aip.dev/133#user-specified-ids
+message User {
+  string name = 1 [json_name = "name"];
+  double latitude = 2 [json_name = "latitude"];
+  double longitude = 3 [json_name = "longitude"];
+  google.protobuf.Timestamp create_time = 4 [json_name = "created_at"];
+  google.protobuf.Timestamp update_time = 5 [json_name = "updated_at"];
+}
+
+// A standard New message with a user-specified ID.
+// The user-specified ID (the `book_id` field in this example) must become a
+// query parameter in the OpenAPI spec.
+message CreateUserRequest {
+  // The user resource which creates the resource on the server.
+  User user = 1;
+}
+
+message GetUserRequest {
+  // The field will contain name of the resource requested
+  string name = 1;
+}
+
+// A standard Update message
+message UpdateUserRequest {
+  // The user resource which replaces the resource on the server.
+  User user = 1;
+
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message DeleteUserRequest {
+  // The resource name of the user to be deleted
+  string name = 1;
+}
+
+message ListUsersRequest {
+  // The parent resource name, for example, "shelves/shelf1".
+  string parent = 1;
+
+  // The maximum number of items to return.
+  int32 page_size = 2;
+
+  // The next_page_token value returned from a previous List request, if any.
+  string page_token = 3;
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+
+  // Token to retrieve the next page of results, or empty if there are no
+  // more results in the list.
+  string next_page_token = 2;
+}
