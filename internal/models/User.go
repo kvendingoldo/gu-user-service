@@ -2,24 +2,23 @@ package models
 
 import (
 	"encoding/json"
+	appErrors "github.com/kvendingoldo/gu-common/pkg/errors"
+	cModels "github.com/kvendingoldo/gu-common/pkg/models"
 	cValidation "github.com/kvendingoldo/gu-common/pkg/validation"
 
-	appErrors "github.com/kvendingoldo/gu-common/pkg/errors"
 	"github.com/kvendingoldo/gu-user-service/config"
 
 	v1 "github.com/kvendingoldo/gu-user-service/pkg/api/kvendingoldo/user/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
-	"time"
 )
 
 type User struct {
-	Name      string  `json:"name" example:"Steven" gorm:"primaryKey"`
+	cModels.BaseModel
+
+	Name      string  `json:"name" example:"Steven" gorm:"unique"`
 	Latitude  float64 `json:"lat" example:"39.12355"`
 	Longitude float64 `json:"lon" example:"27.64538"`
-
-	CreateTime time.Time `json:"create_time,omitempty" example:"2021-02-24 20:19:39" gorm:"autoCreateTime:mili"`
-	UpdateTime time.Time `json:"update_time,omitempty" example:"2021-02-24 20:19:39" gorm:"autoUpdateTime:mili"`
 }
 
 // TableName represents name of SQL table, used by GORM
@@ -29,17 +28,18 @@ func (u *User) TableName() string {
 
 func (u *User) GetGRPCModel() *v1.User {
 	return &v1.User{
-		CreateTime: timestamppb.New(u.CreateTime),
-		UpdateTime: timestamppb.New(u.UpdateTime),
-		Name:       u.Name,
-		Latitude:   u.Latitude,
-		Longitude:  u.Longitude,
+		Id:        u.ID.String(),
+		CreatedAt: timestamppb.New(u.BaseModel.CreatedAt),
+		UpdatedAt: timestamppb.New(u.BaseModel.UpdatedAt),
+		Name:      u.Name,
+		Latitude:  u.Latitude,
+		Longitude: u.Longitude,
 	}
 }
 
 func (u *User) From(gRPCModel *v1.User) {
-	u.CreateTime = gRPCModel.CreateTime.AsTime()
-	u.UpdateTime = gRPCModel.UpdateTime.AsTime()
+	u.BaseModel.CreatedAt = gRPCModel.CreatedAt.AsTime()
+	u.BaseModel.UpdatedAt = gRPCModel.UpdatedAt.AsTime()
 	u.Name = gRPCModel.Name
 	u.Latitude = gRPCModel.Latitude
 	u.Longitude = gRPCModel.Longitude

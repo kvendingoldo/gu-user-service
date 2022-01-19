@@ -12,11 +12,12 @@ import "google/protobuf/field_mask.proto";
 //
 // See: https://google.aip.dev/133#user-specified-ids
 message User {
-  string name = 1 [json_name = "name"];
-  double latitude = 2 [json_name = "latitude"];
-  double longitude = 3 [json_name = "longitude"];
-  google.protobuf.Timestamp create_time = 4 [json_name = "created_at"];
-  google.protobuf.Timestamp update_time = 5 [json_name = "updated_at"];
+  string id = 1 [json_name = "id"];
+  string name = 2 [json_name = "name"];
+  double latitude = 3 [json_name = "latitude"];
+  double longitude = 4 [json_name = "longitude"];
+  google.protobuf.Timestamp created_at = 5 [json_name = "created_at"];
+  google.protobuf.Timestamp updated_at = 6 [json_name = "updated_at"];
 }
 
 // A standard New message with a user-specified ID.
